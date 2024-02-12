@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+    http:
+        image: oven/bun
+        volumes:
+            - .:/home/bun/app
+        network_mode: host
+        command: bun run --watch index.js

@@ -13,6 +13,7 @@ app.use('/app/*', serveStatic({
     root: './',
     rewriteRequestPath: (path) => path.replace(/^\/app/, '/src')
 }))
+app.use('/texture/*', serveStatic({root: './'}))
 
 // controllers
 app.get('/', serveStatic({path: './templates/index.html'}))

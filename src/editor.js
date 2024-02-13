@@ -10,10 +10,10 @@ import { Color3 } from "@babylonjs/core/Maths/math.color.js";
 import { CreateGround } from "@babylonjs/core/Meshes/Builders/groundBuilder.js";
 import { Scene } from "@babylonjs/core/scene.js";
 import { VertexBuffer } from "@babylonjs/core/Buffers/buffer.js";
-import { RawTexture } from "@babylonjs/core/Materials/Textures/rawTexture.js";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture.js";
-import { TerrainMaterial } from "@babylonjs/materials/terrain/terrainMaterial.js";
+import { RawTexture } from "@babylonjs/core/Materials/Textures/rawTexture.js";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial.js";
+import { TerrainMaterial } from "@babylonjs/materials/terrain/terrainMaterial.js";
 
 const textureRole = {
     'top': 'diffuseTexture1',
@@ -38,13 +38,6 @@ export function createEditor(canvas, cameraStartDistance) {
     const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
     light.diffuse = new Color3(1, 1, 1);
     light.intensity = 1;
-
-    /*
-     scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
-     scene.fogDensity = 0.005;
-     scene.fogColor = new BABYLON.Color3(0.9, 0.5, 0.1);
-     scene.clearColor = new BABYLON.Color3(0.9, 0.5, 0.1);
-     */
 
     // Register a render loop to repeatedly render the scene
     engine.runRenderLoop(function () {
@@ -119,9 +112,9 @@ function createMixTexture(mesh, gridSize, maxAltitude, slopeThreshold, heightSep
 function createMaterial(mesh, gridSize, maxAltitude, slopeThreshold, heightSeparation, mixSeparation) {
     const mat = new TerrainMaterial("mat", scene)
     mat.mixTexture = createMixTexture(mesh, gridSize, maxAltitude, slopeThreshold, heightSeparation, mixSeparation)
-    mat.diffuseTexture1 = new Texture("/terrain/top.png", scene)
-    mat.diffuseTexture2 = new Texture("/terrain/slope.png", scene)
-    mat.diffuseTexture3 = new Texture("/terrain/bottom.png", scene)
+    mat.diffuseTexture1 = new Texture("/texture/top.png", scene)
+    mat.diffuseTexture2 = new Texture("/texture/slope.png", scene)
+    mat.diffuseTexture3 = new Texture("/texture/bottom.png", scene)
     // https://www.smart-page.net/smartnormal/
 
     return mat
@@ -148,7 +141,7 @@ export function show(terrain, maxAltitude, slopeThreshold, heightSeparation, mix
         terrainMaterial.mixTexture = createMixTexture(groundMesh, terrain.getSide(), maxAltitude, slopeThreshold, heightSeparation, mixSeparation)
     }
 
-    groundMesh.material = terrainMaterial
+  //  groundMesh.material = terrainMaterial
 }
 
 export function updateTiling(repeating) {

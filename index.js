@@ -5,7 +5,7 @@ const app = new Hono()
 
 // static
 app.use('/pico.css', serveStatic({path: './node_modules/@picocss/pico/css/pico.classless.yellow.min.css'}))
-app.use('/alpine.js', serveStatic({path: './node_modules/alpinejs/dist/module.esm.js'}))
+app.use('/node_modules/*', serveStatic({ root: './' }))
 
 // controllers
 app.get('/', serveStatic({path: './templates/index.html'}))

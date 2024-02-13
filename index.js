@@ -4,8 +4,15 @@ import { serveStatic } from 'hono/bun';
 const app = new Hono()
 
 // static
-app.use('/pico.css', serveStatic({path: './node_modules/@picocss/pico/css/pico.classless.yellow.min.css'}))
-app.use('/node_modules/*', serveStatic({ root: './' }))
+app.use('/pico.css', serveStatic({path: './node_modules/@picocss/pico/css/pico.yellow.min.css'}))
+app.use('/vendor/*', serveStatic({
+    root: './',
+    rewriteRequestPath: (path) => path.replace(/^\/vendor/, '/node_modules')
+}))
+app.use('/app/*', serveStatic({
+    root: './',
+    rewriteRequestPath: (path) => path.replace(/^\/app/, '/src')
+}))
 
 // controllers
 app.get('/', serveStatic({path: './templates/index.html'}))

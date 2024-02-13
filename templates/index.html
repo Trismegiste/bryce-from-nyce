@@ -7,7 +7,9 @@
         <title>Proto</title>
         <link rel="stylesheet" href="/pico.css">
         <style>
+            /* https://grid.layoutit.com/ */
             .container {  
+                max-width: 100%;
                 display: grid;
                 grid-template-columns: 2fr 1fr;
                 grid-template-rows: 1fr;
@@ -29,16 +31,19 @@
         <script type="importmap">
             {
             "imports": {
-            "alpinejs": "/node_modules/alpinejs/dist/module.esm.js",
-            "@babylonjs/": "/node_modules/@babylonjs/"
+            "alpinejs": "/vendor/alpinejs/dist/module.esm.js",
+            "@babylonjs/": "/vendor/@babylonjs/",
+            "terrain": "/app/Terrain.js",
+            "TransfertFunction": "/app/TransfertFunction.js",
+            "terrain-editor": "/app/editor.js"
             }
             }
         </script>
     </head>
     <body>
-        <div class="container">
+        <div class="container" x-data="spa">
             <div class="terrain">
-                <canvas></canvas>
+                <canvas x-ref="renderCanvas"></canvas>
             </div>
             <div class="parameter">
                 <h4>Hello from Pico </h4>
@@ -50,69 +55,120 @@
         </div>
 
         <script type="module">
+            import { Terrain } from 'terrain';
+            import { TransfertFunction } from 'TransfertFunction';
+            import * as TerrainEditor from 'terrain-editor';
             import Alpine from 'alpinejs';
 
-            import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera.js";
-            import { Engine } from "@babylonjs/core/Engines/engine.js";
-            import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight.js";
-            import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
-            import { CreateGround } from "@babylonjs/core/Meshes/Builders/groundBuilder.js";
-            import { CreateSphere } from "@babylonjs/core/Meshes/Builders/sphereBuilder.js";
-            import { Scene } from "@babylonjs/core/scene.js";
-            import { GridMaterial } from "@babylonjs/materials/grid/gridMaterial.js";
-
-            // Get the canvas element from the DOM.
-            const canvas = document.querySelector("canvas");
-
-            // Associate a Babylon Engine to it.
-            const engine = new Engine(canvas);
-
-            // Create our first scene.
-            var scene = new Scene(engine);
-
-            // This creates and positions a free camera (non-mesh)
-            var camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
-
-            // This targets the camera to scene origin
-            camera.setTarget(Vector3.Zero());
-
-            // This attaches the camera to the canvas
-            camera.attachControl(canvas, true);
-
-            // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-            var light = new HemisphericLight("light1", new Vector3(0, 1, 0), scene);
-
-            // Default intensity is 1. Let's dim the light a small amount
-            light.intensity = 0.7;
-
-            // Create a grid material
-            var material = new GridMaterial("grid", scene);
-
-            // Our built-in 'sphere' shape.
-            var sphere = CreateSphere("sphere1", {segments: 16, diameter: 2}, scene);
-
-            // Move the sphere upward 1/2 its height
-            sphere.position.y = 2;
-
-            // Affect a material
-            sphere.material = material;
-
-            // Our built-in 'ground' shape.
-            var ground = CreateGround("ground1", {width: 6, height: 6, subdivisions: 2}, scene);
-
-            // Affect a material
-            ground.material = material;
-
-            // Render every frame
-            engine.runRenderLoop(() => {
-                scene.render();
-            });
+            // outside of AlpineJS because the property will be proxyed, it will slow down and it bugs with private members
+            let terrain = null
 
             Alpine.data('spa', () => ({
-                    distance: 30,
+                    tesselation: 8,
+                    pctAltitude: 50,
+                    textureTiling: 20,
+                    slopeThreshold: 0.5,
+                    heightSeparation: 0.5,
+                    mixSeparation: 7,
 
-                    valid(event) {
-                        console.log(this.distance)
+                    init() {
+                        terrain = new Terrain(this.tesselation)
+                        terrain.generate()
+                        TerrainEditor.createEditor(this.$refs.renderCanvas, 2 * terrain.getSide())
+                        this.updateView()
+                    },
+
+                    loadTexture(event, name) {
+                        let reader = new FileReader()
+                        reader.onload = () => {
+                            this.$refs[name + 'Texture'].src = reader.result
+                            TerrainEditor.updateTexture(name, reader)
+                            TerrainEditor.updateTiling(this.textureTiling)
+                        }
+                        reader.readAsDataURL(event.target.files[0])
+                    },
+
+                    regenerate(event) {
+                        terrain = new Terrain(this.tesselation)
+                        terrain.generate()
+                        this.updateView()
+                    },
+
+                    getHeightMax() {
+                        return terrain.getSide() * this.pctAltitude / 100.0
+                    },
+
+                    changeTiling() {
+                        TerrainEditor.updateTiling(this.textureTiling)
+                    },
+
+                    increaseTessel(event) {
+                        this.tesselation++
+                        terrain.increaseTesselation()
+                        this.updateView()
+                        TerrainEditor.moveAway(2)
+                    },
+
+                    decreaseTessel(event) {
+                        this.tesselation--
+                        terrain.decreaseTesselation()
+                        this.updateView()
+                        TerrainEditor.moveAway(0.5)
+                    },
+
+                    updateView() {
+                        TerrainEditor.show(terrain, this.getHeightMax(), this.slopeThreshold, this.heightSeparation, this.mixSeparation)
+                    }
+                }))
+
+            Alpine.data('tfWidget', (step) => ({
+                    tfChoice: 'identity',
+                    repository: {
+                        identity: new TransfertFunction(x => x, -1, 1),
+                        sigmoid1: new TransfertFunction(x => Math.tanh(x), -1, 1),
+                        'square root': new TransfertFunction(x => x / Math.sqrt(1 + x ** 2), -1, 1),
+                        sinus: new TransfertFunction(x => Math.sin(x), -Math.PI / 2, Math.PI / 2),
+                        sigmoid2: new TransfertFunction(x => Math.tanh(x), -2, 2),
+                        sigmoid3: new TransfertFunction(x => Math.tanh(x), -3, 3)
+                    },
+
+                    getTfCurve(choice) {
+                        let path = null
+                        let tf = this.repository[choice]
+
+                        for (let x = 0; x < 1; x += 1 / step) {
+                            let y = tf.getY(x)
+                            if (path === null) {
+                                path = 'M '
+                            } else {
+                                path += ' L '
+                            }
+                            path += x + ' ' + (1 - y)  // reminder : y-axis is inverted in SVG
+                        }
+
+                        return path
+                    },
+
+                    applyTf(event) {
+                        terrain.applyTransferFunction(this.repository[this.tfChoice])
+                        this.updateView()
+                        this.tfChoice = 'identity'
+                    }
+                }))
+
+            Alpine.data('convolutionWidget', (step) => ({
+                    convChoice: 'identity',
+                    repository: {
+                        identity: [[1]],
+                        smoothing: [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+                        gaussian3: [[0.6, 1.5, 2.1, 1.5, 0.6], [1.5, 4.1, 5.7, 4.1, 1.5], [2.1, 5.7, 8, 5.7, 2.1], [1.5, 4.1, 5.7, 4.1, 1.5], [0.6, 1.5, 2.1, 1.5, 0.6]],
+                        bumpy: [[1, 1, 1], [1, -7, 1], [1, 1, 1]]
+                    },
+
+                    applyConvolution(event) {
+                        terrain.applyConvolution(this.repository[this.convChoice])
+                        this.updateView()
+                        this.convChoice = 'identity'
                     }
                 }))
 

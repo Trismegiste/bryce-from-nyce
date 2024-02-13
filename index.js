@@ -1,8 +1,11 @@
-const server = Bun.serve({
-  port: 3000,
-  fetch(req) {
-    return new Response("Bun! Wesh wesh 333");
-  },
-});
+import { Hono } from 'hono'
+import { serveStatic } from 'hono/bun';
 
-console.log(`Listening on http://localhost:${server.port} ...`);
+const app = new Hono()
+app.use('/style.css', serveStatic({path: './node_modules/@picocss/pico/css/pico.classless.pink.min.css'}))
+app.get('/', serveStatic({ path: './templates/index.html'}))
+
+export default {
+    port: 3000,
+    fetch: app.fetch
+} 

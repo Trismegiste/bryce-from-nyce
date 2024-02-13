@@ -141,7 +141,7 @@ export function show(terrain, maxAltitude, slopeThreshold, heightSeparation, mix
         terrainMaterial.mixTexture = createMixTexture(groundMesh, terrain.getSide(), maxAltitude, slopeThreshold, heightSeparation, mixSeparation)
     }
 
-  //  groundMesh.material = terrainMaterial
+    groundMesh.material = terrainMaterial
 }
 
 export function updateTiling(repeating) {

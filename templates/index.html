@@ -4,15 +4,37 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-        <link rel="stylesheet" href="/style.css">
+        <title>Proto</title>
+        <link rel="stylesheet" href="/pico.css">
+        <script type="importmap">
+            {
+            "imports": {
+            "alpinejs": "/alpine.js"
+            }
+            }
+        </script>
     </head>
     <body>
         <h1>Hello from JS </h1>
         <h2>Hello from Bun </h2>
         <h3>Hello from Hono </h3>
         <h4>Hello from Pico </h4>
-        <button>yolo</button>
-        <input type="range"/>
+        <form x-data="spa">
+            <input type="range" x-model="distance" min="0" max="100" step="any" value="50"/>
+            <button x-on:click.prevent="valid">yolo</button>
+        </form>
+        <script type="module">
+            import Alpine from 'alpinejs';
+
+            Alpine.data('spa', () => ({
+                    distance: 30,
+
+                    valid(event) {
+                        console.log(this.distance)
+                    }
+                }))
+
+            Alpine.start()
+        </script>
     </body>
 </html>

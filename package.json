@@ -1,1 +1,1 @@
-{ "dependencies": { "@babylonjs/core": "^6.42.0", "@babylonjs/gui": "^6.42.0", "@babylonjs/materials": "^6.42.0", "@picocss/pico": "^2.0.0", "alpinejs": "^3.13.5", "hono": "^4.0.1" } }
+{ "dependencies": { "@babylonjs/core": "^6.42.0", "@babylonjs/materials": "^6.42.0", "@picocss/pico": "^2.0.0", "alpinejs": "^3.13.5", "hono": "^4.0.1" } }

@@ -36,6 +36,26 @@
                 width: 100%;
                 display: block;
             }
+
+            .texturing svg tspan {
+                text-transform: capitalize;
+            }
+
+            .texturing label {
+                cursor: pointer;
+            }
+            
+            .tesselation button {
+                margin: 0 2em;
+            }
+            
+            .tesselation .value {
+                font-size: 140%;
+            }
+            
+            .actions button {
+                width: 100%;
+            }
         </style>
         <script type="importmap">
             {
@@ -55,11 +75,13 @@
                 <canvas x-ref="renderCanvas"></canvas>
             </div>
             <div class="parameter">
-                <div>
-                    <label>Tesselation</label>
+                <div class="tesselation">
+                    <span>Tesselation</span>
                     <button x-on:click="decreaseTessel">-1</button>
-                    <span x-text="tesselation"></span>
+                    <span x-text="tesselation" class="value"></span>
                     <button x-on:click="increaseTessel">+1</button>
+                </div>
+                <div class="actions">
                     <button x-on:click="regenerate">Generate</button>
                 </div>
                 <div class="grid">
@@ -82,27 +104,21 @@
                     <label>Texture tiling</label>
                     <input type="range" x-model="textureTiling" min="1" max="40" x-on:change="changeTiling"/>
                 </div>
-                <div class="grid" x-data="textureWidget">
-                    <div x-on:click.prevent="$el.firstElementChild.click()" x-show="!$refs.bottomTexture.height">
-                        <input type="file" accept="image/*" x-on:change="loadTexture($event, 'bottom')" hidden="true"/>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <rect x="1" y="1" width="18" height="18" stroke="#777" stroke-width="1" fill="none" rx="3" ry="3" stroke-dasharray="1" />
-                        <text text-anchor="middle" font-size="3" fill="#777">
-                        <tspan x="10" y="8">Bottom</tspan><tspan x="10" y="14">Texture</tspan>
-                        </text>
-                        </svg>
-                        <img x-ref="bottomTexture"/>
-                    </div>
-                    <div>
-                        <label>Top</label>
-                        <input type="file" accept="image/*" x-on:change="loadTexture($event, 'top')"/>
-                        <img x-ref="topTexture"/>
-                    </div> 
-                    <div>
-                        <label>Slope</label>
-                        <input type="file" accept="image/*" x-on:change="loadTexture($event, 'slope')"/>
-                        <img x-ref="slopeTexture"/>
-                    </div>
+                <div class="grid texturing">
+                    <template x-for="texture in ['bottom','top','slope']">
+                        <div x-data="textureWidget(texture)" x-id="[texture]">
+                            <input type="file" accept="image/*" x-on:change="loadTexture" hidden="true" x-bind:id="$id(texture)"/>
+                            <label x-bind:for="$id(texture)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" x-show="showButton">
+                                <rect x="1" y="1" width="18" height="18" stroke="#777" stroke-width="1" fill="none" rx="3" ry="3" stroke-dasharray="1" />
+                                <text text-anchor="middle" font-size="3" fill="#777">
+                                <tspan x="10" y="8" x-text="texture"></tspan><tspan x="10" y="14">texture</tspan>
+                                </text>
+                                </svg>
+                                <img x-ref="imgTexture" x-show="!showButton"/>
+                            </label>
+                        </div>
+                    </template>
                 </div>
                 <div class="grid" x-data="tfWidget(100)">
                     <div>
@@ -241,14 +257,16 @@
                     }
                 }))
 
-            Alpine.data('textureWidget', () => ({
+            Alpine.data('textureWidget', (name) => ({
+                    showButton: true,
 
-                    loadTexture(event, name) {
+                    loadTexture(event) {
                         let reader = new FileReader()
                         reader.onload = () => {
-                            this.$refs[name + 'Texture'].src = reader.result
+                            this.$refs.imgTexture.src = reader.result
                             TerrainEditor.updateTexture(name, reader)
                             TerrainEditor.updateTiling(this.textureTiling)
+                            this.showButton = false
                         }
                         reader.readAsDataURL(event.target.files[0])
                     }

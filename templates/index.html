@@ -26,7 +26,7 @@
                 overflow-y: auto;
                 max-height: 100vh;
             }
-            
+
             .parameter > div {
                 margin-bottom: 1em;
             }
@@ -82,15 +82,15 @@
                     <label>Texture tiling</label>
                     <input type="range" x-model="textureTiling" min="1" max="40" x-on:change="changeTiling"/>
                 </div>
-                <div class="grid">
-                    <div>
+                <div class="grid" x-data="textureWidget">
+                    <div x-on:click.prevent="$el.firstElementChild.click()" x-show="!$refs.bottomTexture.height">
+                        <input type="file" accept="image/*" x-on:change="loadTexture($event, 'bottom')" hidden="true"/>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                         <rect x="1" y="1" width="18" height="18" stroke="#777" stroke-width="1" fill="none" rx="3" ry="3" stroke-dasharray="1" />
                         <text text-anchor="middle" font-size="3" fill="#777">
                         <tspan x="10" y="8">Bottom</tspan><tspan x="10" y="14">Texture</tspan>
                         </text>
                         </svg>
-                        <input type="file" accept="image/*" x-on:change="loadTexture($event, 'bottom')"/>
                         <img x-ref="bottomTexture"/>
                     </div>
                     <div>
@@ -172,16 +172,6 @@
                         this.updateView()
                     },
 
-                    loadTexture(event, name) {
-                        let reader = new FileReader()
-                        reader.onload = () => {
-                            this.$refs[name + 'Texture'].src = reader.result
-                            TerrainEditor.updateTexture(name, reader)
-                            TerrainEditor.updateTiling(this.textureTiling)
-                        }
-                        reader.readAsDataURL(event.target.files[0])
-                    },
-
                     regenerate(event) {
                         terrain = new Terrain(this.tesselation)
                         terrain.generate()
@@ -248,6 +238,19 @@
                         terrain.applyTransferFunction(this.repository[this.tfChoice])
                         this.updateView()
                         this.tfChoice = 'identity'
+                    }
+                }))
+
+            Alpine.data('textureWidget', () => ({
+
+                    loadTexture(event, name) {
+                        let reader = new FileReader()
+                        reader.onload = () => {
+                            this.$refs[name + 'Texture'].src = reader.result
+                            TerrainEditor.updateTexture(name, reader)
+                            TerrainEditor.updateTiling(this.textureTiling)
+                        }
+                        reader.readAsDataURL(event.target.files[0])
                     }
                 }))
 

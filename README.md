@@ -5,6 +5,8 @@ Bryce-lyke Fractal Terrayn Edytor
 It's a 3D terrain editor. Currently, only the 
 [Diamond-Square algorithm](https://en.wikipedia.org/wiki/Diamond-square_algorithm) is implemented.
 
+![Screenshot](https://github.com/Trismegiste/bryce-from-nyce/blob/master/docs/screenshot.jpg)
+
 ## How
 
 ![Stack](https://github.com/Trismegiste/bryce-from-nyce/blob/master/docs/stack.svg)

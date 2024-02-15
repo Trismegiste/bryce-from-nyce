@@ -38,9 +38,16 @@ $ bun run index.js
 
 ## What is special about this implementation of Diamond-Square algorithm ?
 
-Unlike many implementions of this algorithm you can find on the net, 
+Two points : unlike many implementions of this algorithm you can find on the net, 
 this release is divided into steps. Each step adds more refinement to the mesh
 and you can increase or decrease this tesselation afterward generating the terrain.
+
+The second point is the texturing algorithm that uses 3 textures (top, bottom and slope)
+that are mixed according to height and slope of the terrain. The slope texture is
+visible when the terrain is steep.
+
+With the help of transfer functions and convolution matrices, you can rapidly generate
+realist terrains. 
 
 ## API
 * src/Terrain.js : all mathematical stuff

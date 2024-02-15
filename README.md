@@ -16,7 +16,7 @@ It runs with
 served by [Bun](https://bun.sh/),
 built on [Hono](https://hono.dev/), 
 rendered with [BabylonJS](https://babylonjs.com/), 
-reactived with [AlpineJS](https://alpinejs.dev/) 
+reactived with [AlpineJS](https://alpinejs.dev/),
 designed with [PicoCSS](https://picocss.com/)
 and containerized with [Docker](https://www.docker.com/).
 

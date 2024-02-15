@@ -2,7 +2,8 @@
 Bryce-lyke Fractal Terrayn Edytor
 
 ## What
-It's a 3D terrain editor. Currently, only the Diamond-Square algorithm is implemented.
+It's a 3D terrain editor. Currently, only the 
+[Diamond-Square algorithm](https://en.wikipedia.org/wiki/Diamond-square_algorithm) is implemented.
 
 ## How
 
@@ -11,9 +12,9 @@ It's a 3D terrain editor. Currently, only the Diamond-Square algorithm is implem
 It runs with 
 [ECMAScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/JavaScript_technologies_overview), 
 served by [Bun](https://bun.sh/),
-built on with [Hono](https://hono.dev/), 
+built on [Hono](https://hono.dev/), 
 rendered with [BabylonJS](https://babylonjs.com/), 
-reactive with [AlpineJS](https://alpinejs.dev/) 
+reactived with [AlpineJS](https://alpinejs.dev/) 
 designed with [PicoCSS](https://picocss.com/)
 and containerized with [Docker](https://www.docker.com/).
 

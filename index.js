@@ -16,7 +16,7 @@ app.use('/app/*', serveStatic({
 app.use('/texture/*', serveStatic({root: './'}))
 
 // controllers
-app.get('/', serveStatic({path: './templates/index.html'}))
+app.get('/', serveStatic({path: './template/index.html'}))
 
 export default {
     port: 3000,

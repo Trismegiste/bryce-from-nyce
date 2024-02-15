@@ -5,4 +5,4 @@ services:
         volumes:
             - .:/home/bun/app
         network_mode: host
-        command: bun run --watch index.js
+        command: bin/launch.sh

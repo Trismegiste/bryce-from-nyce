@@ -1,19 +1,30 @@
 /*
- * Eclipse Wiki
+ * Bryce
  */
 
+/**
+ * A fractal terrain
+ */
 export class Terrain {
     grid = [[]]
     lastIndex = 0
     gridTesselation = 0
     transferFunction = [];
 
+    /**
+     * Constructor
+     * @param {Number} gridTesselation the level of tesselation from 1 to any integer. Warning, memory is growing exponentially
+     * @returns {Terrain}
+     */
     constructor(gridTesselation) {
         this.gridTesselation = gridTesselation
         this.lastIndex = 2 ** gridTesselation
         this.reset()
     }
 
+    /**
+     * Resets the grid
+     */
     reset() {
         for (let x = 0; x <= this.lastIndex; x++) {
             this.grid[x] = []
@@ -28,6 +39,9 @@ export class Terrain {
         this.grid[this.lastIndex][this.lastIndex] = Math.random()
     }
 
+    /**
+     * Generates the terrain with the given tesselation level
+     */
     generate() {
         for (let k = 0; k < this.gridTesselation; k++) {
             this.#generateAtLevel(k)
@@ -35,9 +49,13 @@ export class Terrain {
         this.#normalize()
     }
 
+    /**
+     * Generates the terrain heights at a given level of tesselation
+     * @param {Number} level the level of tesselation, from 0 to (this.tesselation - 1)
+     */
     #generateAtLevel(level) {
         const step = 2 ** (this.gridTesselation - level)
-        // diamond
+        // the diamond step
         for (let left = 0; left < this.lastIndex; left += step) {
             for (let top = 0; top < this.lastIndex; top += step) {
                 this.grid[left + step / 2][top + step / 2] = (
@@ -48,7 +66,7 @@ export class Terrain {
                         ) / 4 + (Math.random() - 0.5) * 2 ** -level
             }
         }
-        // square
+        // the square step
         for (let left = 0; left <= this.lastIndex; left += step) {
             for (let top = 0; top <= this.lastIndex; top += step) {
                 let pointToUpdate = [{x: left + step / 2, y: top}, {x: left, y: top + step / 2}]
@@ -89,10 +107,17 @@ export class Terrain {
         return sum / count
     }
 
+    /**
+     * Gets the grid size
+     * @returns {Number}
+     */
     getSide() {
         return this.lastIndex + 1
     }
 
+    /**
+     * Normalizes all heights for being included in [0 , 1]
+     */
     #normalize() {
         // Extract boundaries for normalizing
         let minHeight = Infinity
@@ -117,6 +142,11 @@ export class Terrain {
         }
     }
 
+    /**
+     * Dumps all heights for building a mesh
+     * Processes all transfer functions
+     * @returns {Array}
+     */
     dump() {
         let dataArray = new Array(this.getSide() * this.getSide())
         let index = 0
@@ -133,6 +163,11 @@ export class Terrain {
         return dataArray;
     }
 
+    /**
+     * Stacks a transfer function
+     * @param {TransferFunction} tf
+     * @returns {Terrain}
+     */
     applyTransferFunction(tf) {
         // checking definition
         for (let x = 0; x <= 1; x += 0.1) {
@@ -146,6 +181,10 @@ export class Terrain {
         return this
     }
 
+    /**
+     * Apply a convolution matrix on the terrain grid
+     * No "undo"
+     */
     applyConvolution(matrix) {
         // temporary new grid
         let newGrid = new Array(this.grid.length)
@@ -184,6 +223,11 @@ export class Terrain {
         this.grid = newGrid
     }
 
+    /**
+     * Gets some statistics on heights
+     * @param {Number} boxCount subdivision of height
+     * @returns {Array}
+     */
     getStatistics(boxCount = 20) {
         let stat = new Array(boxCount)
         stat.fill(0)
@@ -197,6 +241,9 @@ export class Terrain {
         return stat
     }
 
+    /**
+     * Extends the grid and increases the tesselation of this terrain
+     */
     increaseTesselation() {
         const newGridSide = 2 * this.lastIndex + 1
         let newGrid = new Array(newGridSide)
@@ -217,6 +264,9 @@ export class Terrain {
         this.#generateAtLevel(this.gridTesselation - 1)
     }
 
+    /**
+     * Shrinks the grid and decreases the tesselation of this terrain
+     */
     decreaseTesselation() {
         const newGridSide = this.lastIndex / 2 + 1
         let newGrid = new Array(newGridSide)

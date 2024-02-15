@@ -46,7 +46,8 @@ The second point is the texturing algorithm that uses 3 textures (top, bottom an
 that are mixed according to height and slope of the terrain. The slope texture is
 visible when the terrain is steep.
 
-With the help of transfer functions and convolution matrices, you can rapidly generate
+With the help of [transfer functions](https://en.wikipedia.org/wiki/Transfer_function) and
+[convolution matrices](https://en.wikipedia.org/wiki/Convolution#Discrete_convolution), you can rapidly generate
 realist terrains. 
 
 ## API

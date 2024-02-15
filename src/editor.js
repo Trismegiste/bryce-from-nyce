@@ -26,6 +26,11 @@ let scene = null
 let groundMesh = null
 let terrainMaterial = null
 
+/**
+ * Builds the terrain editor into the canvas
+ * @param {HTMLCanvasElement} canvas
+ * @param {Float} cameraStartDistance a distance for the camera
+ */
 export function createEditor(canvas, cameraStartDistance) {
     // Generate the BABYLON 3D engine
     const engine = new Engine(canvas)
@@ -120,11 +125,24 @@ function createMaterial(mesh, gridSize, maxAltitude, slopeThreshold, heightSepar
     return mat
 }
 
+/**
+ * Updates a texture with a FileReader.result
+ * @param {String} name Texture name (see textureRole above)
+ * @param {FileReader} reader
+ */
 export function updateTexture(name, reader) {
     terrainMaterial[textureRole[name]].dispose()
     terrainMaterial[textureRole[name]] = new Texture(reader.result, scene)
 }
 
+/**
+ * Update the mesh in BabylonJS with the given terrain and other parameters
+ * @param {Terrain} terrain
+ * @param {Float} maxAltitude
+ * @param {Float} slopeThreshold Threshold that will be compared to the normal of the surface. From 0 (vertical surface) to 1 (horizontal surface)
+ * @param {type} heightSeparation Where the bottom is ending and when the top texture is starting. Normalized, from 0 to 1
+ * @param {type} mixSeparation How to mix bottom and top textures around the threshold. From 2 (textures are mixed) to 10 (border between top and bottom is clear)
+ */
 export function show(terrain, maxAltitude, slopeThreshold, heightSeparation, mixSeparation) {
     if (groundMesh !== null) {
         groundMesh.dispose()
@@ -144,6 +162,10 @@ export function show(terrain, maxAltitude, slopeThreshold, heightSeparation, mix
     groundMesh.material = terrainMaterial
 }
 
+/**
+ * Updates the tiling of all textures
+ * @param {Float} repeating From 1 (no repeat) to infinity)
+ */
 export function updateTiling(repeating) {
     for (const field of Object.values(textureRole)) {
         terrainMaterial[field].uScale = repeating
@@ -151,6 +173,10 @@ export function updateTiling(repeating) {
     }
 }
 
+/**
+ * Moves away the camera by a ratio on the current distance
+ * @param {Float} ratio
+ */
 export function moveAway(ratio) {
     const camera = scene.activeCamera
     camera.radius *= ratio

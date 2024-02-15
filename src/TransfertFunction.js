@@ -1,5 +1,5 @@
 /*
- * Eclipse Wiki
+ * Bryce
  */
 
 const step = 100.0
@@ -12,10 +12,19 @@ export class TransfertFunction {
     yMin = 0
     yMax = 0;
 
+    /**
+     * Constructor
+     * @param {callable} fct the transfer function, not normalized
+     * @param {Float} min From x = min
+     * @param {Float} max To y = max
+     * @returns {TransfertFunction}
+     */
     constructor(fct, min, max) {
         this.tf = fct
         this.xMin = min
         this.xMax = max
+
+        // normalizes the transfer function [0,1] -> [0,1]
 
         let minHeight = Infinity
         let maxHeight = -Infinity
@@ -36,8 +45,8 @@ export class TransfertFunction {
 
     /**
      * Gets ordinate
-     * @param {type} x between 0 and 1
-     * @returns {Number} between 0 and 1
+     * @param {Float} x between 0 and 1
+     * @returns {Float} between 0 and 1
      */
     getY(x) {
         x = x * (this.xMax - this.xMin) + this.xMin

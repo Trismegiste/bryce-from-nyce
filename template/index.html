@@ -44,15 +44,15 @@
             .texturing label {
                 cursor: pointer;
             }
-            
+
             .tesselation button {
                 margin: 0 2em;
             }
-            
+
             .tesselation .value {
                 font-size: 140%;
             }
-            
+
             .actions button {
                 width: 100%;
             }
@@ -64,7 +64,8 @@
             "@babylonjs/": "/vendor/@babylonjs/",
             "terrain": "/app/Terrain.js",
             "TransfertFunction": "/app/TransfertFunction.js",
-            "terrain-editor": "/app/editor.js"
+            "terrain-editor": "/app/editor.js",
+            "texture-constant": "/app/texture-constant.js"
             }
             }
         </script>
@@ -105,7 +106,7 @@
                     <input type="range" x-model="textureTiling" min="1" max="40" x-on:change="changeTiling"/>
                 </div>
                 <div class="grid texturing">
-                    <template x-for="texture in ['bottom','top','slope']">
+                    <template x-for="(field, texture) in textureRole">
                         <div x-data="textureWidget(texture)" x-id="[texture]">
                             <input type="file" accept="image/*" x-on:change="loadTexture" hidden="true" x-bind:id="$id(texture)"/>
                             <label x-bind:for="$id(texture)">
@@ -169,6 +170,7 @@
             import { TransfertFunction } from 'TransfertFunction';
             import * as TerrainEditor from 'terrain-editor';
             import Alpine from 'alpinejs';
+            import { textureRole } from 'texture-constant';
 
             // outside of AlpineJS because the property will be proxyed, it will slow down and it bugs with private members
             let terrain = null
@@ -180,6 +182,7 @@
                     slopeThreshold: 0.5,
                     heightSeparation: 0.5,
                     mixSeparation: 7,
+                    textureRole,
 
                     init() {
                         terrain = new Terrain(this.tesselation)

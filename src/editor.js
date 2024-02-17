@@ -14,12 +14,7 @@ import { Texture } from "@babylonjs/core/Materials/Textures/texture.js";
 import { RawTexture } from "@babylonjs/core/Materials/Textures/rawTexture.js";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial.js";
 import { TerrainMaterial } from "@babylonjs/materials/terrain/terrainMaterial.js";
-
-const textureRole = {
-    'top': 'diffuseTexture1',
-    'slope': 'diffuseTexture2',
-    'bottom': 'diffuseTexture3'
-}
+import { textureRole } from 'texture-constant';
 
 // global to this module
 let scene = null
@@ -120,6 +115,9 @@ function createMaterial(mesh, gridSize, maxAltitude, slopeThreshold, heightSepar
     mat.diffuseTexture1 = new Texture("/texture/top.png", scene)
     mat.diffuseTexture2 = new Texture("/texture/slope.png", scene)
     mat.diffuseTexture3 = new Texture("/texture/bottom.png", scene)
+    mat.bumpTexture1 = new Texture("/texture/bump.png", scene)
+    mat.bumpTexture2 = new Texture("/texture/bump.png", scene)
+    mat.bumpTexture3 = new Texture("/texture/bump.png", scene)
     // https://www.smart-page.net/smartnormal/
 
     return mat

@@ -162,6 +162,12 @@
                         </table>
                     </div>
                 </div>
+                <div x-data="lightWidget" x-init="$watch('lightVisible', changeLightball)">
+                    <label>
+                        Light ball
+                        <input type="checkbox" x-model="lightVisible"/>
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -288,6 +294,14 @@
                         terrain.applyConvolution(this.repository[this.convChoice])
                         this.updateView()
                         this.convChoice = 'identity'
+                    }
+                }))
+
+            Alpine.data('lightWidget', () => ({
+                    lightVisible: false,
+
+                    changeLightball(value) {
+                        TerrainEditor.enableLightball(value)
                     }
                 }))
 

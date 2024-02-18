@@ -4,22 +4,27 @@
 
 import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera.js";
 import { Engine } from "@babylonjs/core/Engines/engine.js";
-import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight.js";
+import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight.js";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
 import { Color3 } from "@babylonjs/core/Maths/math.color.js";
 import { CreateGround } from "@babylonjs/core/Meshes/Builders/groundBuilder.js";
+import { CreateGeodesic } from "@babylonjs/core/Meshes/Builders/geodesicBuilder.js";
 import { Scene } from "@babylonjs/core/scene.js";
 import { VertexBuffer } from "@babylonjs/core/Buffers/buffer.js";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture.js";
 import { RawTexture } from "@babylonjs/core/Materials/Textures/rawTexture.js";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial.js";
 import { TerrainMaterial } from "@babylonjs/materials/terrain/terrainMaterial.js";
+import { ActionManager } from "@babylonjs/core/Actions/actionManager.js";
+import { Ray } from "@babylonjs/core/Culling/ray.js";
+import { ExecuteCodeAction } from "@babylonjs/core/Actions/directActions.js";
 import { textureRole } from 'texture-constant';
 
 // global to this module
 let scene = null
 let groundMesh = null
 let terrainMaterial = null
+let light
 
 /**
  * Builds the terrain editor into the canvas
@@ -35,9 +40,19 @@ export function createEditor(canvas, cameraStartDistance) {
     camera.attachControl(canvas, true)
 
     // This creates a light
-    const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
+    const light = new DirectionalLight("light", new Vector3(0, -1, 0), scene);
     light.diffuse = new Color3(1, 1, 1);
     light.intensity = 1;
+
+    let ball = CreateGeodesic("lightball", {size: 1, m: 10, n: 10, flat: false}, scene)
+    ball.isVisible = false
+    ball.actionManager = new ActionManager(scene)
+    ball.actionManager.registerAction(
+            new ExecuteCodeAction(ActionManager.OnPickTrigger, event => {
+                let direction = event.additionalData.pickedPoint
+                direction.subtractInPlace(ball.position)
+                light.direction = direction.normalizeToNew().negate()
+            }))
 
     // Register a render loop to repeatedly render the scene
     engine.runRenderLoop(function () {
@@ -178,4 +193,13 @@ export function updateTiling(repeating) {
 export function moveAway(ratio) {
     const camera = scene.activeCamera
     camera.radius *= ratio
+}
+
+export function enableLightball(mode) {
+    const ball = scene.getMeshByName('lightball')
+    let size = groundMesh.getBoundingInfo().boundingSphere.radiusWorld / 2
+
+    ball.scaling = new Vector3(size, size, size)
+    ball.position.y = size
+    ball.isVisible = mode
 }

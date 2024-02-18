@@ -1,5 +1,5 @@
 # Bryce from Nyce
-Bryce-lyke Fractal Terrayn Edytor
+Bryce-like Fractal Terrain Generator
 
 ## What
 It's a 3D terrain editor. Currently, only the 
@@ -58,10 +58,7 @@ realist terrains.
 * texture/ : default textures
 
 ## TODO (from probable to improbable)
-* Tests, as soon as I've learnt Jest
 * Fog
-* Lighting
-* Bump mapping
 * Skybox
 * Exporting the scene
 * Managing a camera on the terrain

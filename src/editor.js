@@ -5,6 +5,7 @@
 import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera.js";
 import { Engine } from "@babylonjs/core/Engines/engine.js";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight.js";
+import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight.js";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
 import { Color3 } from "@babylonjs/core/Maths/math.color.js";
 import { CreateGround } from "@babylonjs/core/Meshes/Builders/groundBuilder.js";
@@ -39,10 +40,15 @@ export function createEditor(canvas, cameraStartDistance) {
     const camera = new ArcRotateCamera("Camera", 0, 0, cameraStartDistance, new Vector3(0, 0, 0), scene)
     camera.attachControl(canvas, true)
 
-    // This creates a light
-    const light = new DirectionalLight("light", new Vector3(0, -1, 0), scene);
+    // The sun
+    const light = new DirectionalLight("sun", new Vector3(0, -1, 0), scene)
     light.diffuse = new Color3(1, 1, 1);
     light.intensity = 1;
+
+    // Reflections from the ground
+    let ambient = new HemisphericLight("ambient", new Vector3(0, 1, 0), scene);
+    ambient.diffuse = new Color3(1, 1, 1);
+    ambient.intensity = 0.3;
 
     let ball = CreateGeodesic("lightball", {size: 1, m: 10, n: 10, flat: false}, scene)
     ball.isVisible = false

@@ -239,7 +239,8 @@
                         'square root': new TransfertFunction(x => x / Math.sqrt(1 + x ** 2), -1, 1),
                         sinus: new TransfertFunction(x => Math.sin(x), -Math.PI / 2, Math.PI / 2),
                         sigmoid2: new TransfertFunction(x => Math.tanh(x), -2, 2),
-                        sigmoid3: new TransfertFunction(x => Math.tanh(x), -3, 3)
+                        sigmoid3: new TransfertFunction(x => Math.tanh(x), -3, 3),
+                        doubling: new TransfertFunction(x => 1 - Math.acos(Math.cos(x)), -Math.PI, 3 * Math.PI)
                     },
 
                     getTfCurve(choice) {

@@ -18,6 +18,8 @@ import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial.js"
 import { TerrainMaterial } from "@babylonjs/materials/terrain/terrainMaterial.js";
 import { ActionManager } from "@babylonjs/core/Actions/actionManager.js";
 import { Ray } from "@babylonjs/core/Culling/ray.js";
+import { ShadowGeneratorSceneComponent } from "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js";
+import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator.js";
 import { ExecuteCodeAction } from "@babylonjs/core/Actions/directActions.js";
 import { textureRole } from 'texture-constant';
 
@@ -25,7 +27,8 @@ import { textureRole } from 'texture-constant';
 let scene = null
 let groundMesh = null
 let terrainMaterial = null
-let light
+let light = null
+let shadowGenerator = null
 
 /**
  * Builds the terrain editor into the canvas
@@ -46,10 +49,11 @@ export function createEditor(canvas, cameraStartDistance) {
     light.intensity = 1;
 
     // Reflections from the ground
-    let ambient = new HemisphericLight("ambient", new Vector3(0, 1, 0), scene);
-    ambient.diffuse = new Color3(1, 1, 1);
+    let ambient = new HemisphericLight("ambient", new Vector3(0, 1, 0), scene)
+    ambient.diffuse = new Color3(1, 1, 1)
     ambient.intensity = 0.3;
 
+    // light control white ball
     let ball = CreateGeodesic("lightball", {size: 1, m: 10, n: 10, flat: false}, scene)
     ball.isVisible = false
     ball.actionManager = new ActionManager(scene)
@@ -59,6 +63,9 @@ export function createEditor(canvas, cameraStartDistance) {
                 direction.subtractInPlace(ball.position)
                 light.direction = direction.normalizeToNew().negate()
             }))
+
+    shadowGenerator = new ShadowGenerator(1024, light);
+    shadowGenerator.bias = 0.0001;
 
     // Register a render loop to repeatedly render the scene
     engine.runRenderLoop(function () {
@@ -88,6 +95,10 @@ function createMesh(terrain, maxAltitude) {
     }
     ground.updateVerticesData(VertexBuffer.PositionKind, vertex)
     ground.createNormals(true)
+
+    // shadow
+    shadowGenerator.addShadowCaster(ground)
+    ground.receiveShadows = true
 
     return ground
 }
